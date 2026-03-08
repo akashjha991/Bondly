@@ -4,6 +4,7 @@ import { ProfileForm } from "@/components/features/profile/ProfileForm";
 import { RelationshipSettings } from "@/components/features/profile/RelationshipSettings";
 import { AccountSettings } from "@/components/features/profile/AccountSettings";
 import { AppearanceSettings } from "@/components/features/profile/AppearanceSettings";
+import { ProfileHeader } from "@/components/features/profile/ProfileHeader";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
@@ -51,6 +52,12 @@ export default async function ProfilePage() {
             </div>
 
             <ProfileForm initialUser={fetchedUser as any} />
+
+            {fetchedUser.relationshipId && (
+                <div className="mt-8">
+                    <ProfileHeader xp={fetchedUser.xp} level={fetchedUser.level} />
+                </div>
+            )}
 
             <RelationshipSettings relationship={relationshipData} />
 
