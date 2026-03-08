@@ -25,10 +25,10 @@ export default async function DashboardLayout({
                 <TopNavigation xp={xp || 0} level={level || 1} />
 
                 {/* Main Content Area */}
-                {/* Notice the mb-16 to leave space for the Bottom Navigation */}
-                <main className="flex-1 overflow-y-auto pb-20 relative">
-                    <div className="mx-auto max-w-5xl h-full p-4 md:p-8 flex flex-col">
-                        <div className="flex-1 overflow-y-auto">
+                {/* Notice the pb layout to leave space for the Bottom Navigation */}
+                <main className="flex-1 overflow-hidden flex flex-col pb-14 sm:pb-16 relative w-full">
+                    <div className="mx-auto w-full max-w-5xl h-full flex flex-col sm:p-4">
+                        <div className="flex-1 overflow-hidden flex flex-col relative w-full h-full">
                             {children}
                         </div>
                     </div>

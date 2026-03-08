@@ -47,7 +47,12 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
 
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            const scrollContainer = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+            if (scrollContainer) {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            } else {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
         }
     }, [messages]);
 
@@ -86,15 +91,15 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                    Chat <span className={cn("w-2 h-2 rounded-full", isConnected ? "bg-green-500" : "bg-red-500")} />
+        <div className="flex flex-col h-full bg-white dark:bg-slate-900 sm:rounded-xl shadow-[0_-2px_10px_rgba(0,0,0,0.02)] sm:shadow-sm border-t sm:border border-slate-200 dark:border-slate-800 -mx-4 sm:mx-0 overflow-hidden relative">
+            <div className="p-3 sm:p-4 shrink-0 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-950/50 relative z-10 backdrop-blur-md">
+                <h2 className="text-sm sm:text-lg font-semibold flex items-center gap-2">
+                    Live Chat <span className={cn("inline-block w-2.5 h-2.5 rounded-full", isConnected ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-500")} />
                 </h2>
             </div>
 
-            <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-                <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full">
+            <ScrollArea className="flex-1 w-full" ref={scrollRef}>
+                <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full p-4">
                     {messages.map((msg) => {
                         const isMe = msg.senderId === user?.id;
                         return (
@@ -105,7 +110,7 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
                                     isMe ? "justify-end" : "justify-start"
                                 )}
                             >
-                                <div className={cn("flex max-w-[75%] gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
+                                <div className={cn("flex max-w-[85%] sm:max-w-[75%] gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
                                     <Avatar className="w-8 h-8 rounded-full shadow-sm shrink-0 border border-slate-100 dark:border-slate-800 mt-1">
                                         <AvatarImage src={msg.sender?.image || ""} />
                                         <AvatarFallback className="text-[10px] bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-100">
@@ -113,14 +118,15 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
                                         </AvatarFallback>
                                     </Avatar>
 
-                                    <div className={cn("flex flex-col", isMe ? "items-end" : "items-start")}>
+                                    <div className={cn("flex flex-col flex-1 min-w-0", isMe ? "items-end" : "items-start")}>
                                         <div
                                             className={cn(
-                                                "px-4 py-2 rounded-2xl",
+                                                "px-4 py-2 rounded-2xl break-words",
                                                 isMe
                                                     ? "bg-rose-500 text-white rounded-tr-none"
                                                     : "bg-slate-100 dark:bg-slate-800 rounded-tl-none"
                                             )}
+                                            style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
                                         >
                                             {msg.content}
                                         </div>
@@ -135,16 +141,16 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
                 </div>
             </ScrollArea>
 
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-                <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto w-full">
+            <div className="p-3 sm:p-4 shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-10">
+                <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto w-full items-end">
                     <Input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type a message..."
-                        className="flex-1 rounded-full bg-slate-100 dark:bg-slate-800 border-transparent focus-visible:ring-rose-500"
+                        className="flex-1 rounded-2xl bg-slate-100 dark:bg-slate-800 border-transparent focus-visible:ring-rose-500 min-h-[44px]"
                     />
-                    <Button type="submit" size="icon" className="rounded-full bg-rose-500 hover:bg-rose-600">
-                        <Send className="w-4 h-4" />
+                    <Button type="submit" size="icon" className="rounded-full bg-rose-500 hover:bg-rose-600 h-11 w-11 shrink-0">
+                        <Send className="w-5 h-5 ml-0.5" />
                     </Button>
                 </form>
             </div>
