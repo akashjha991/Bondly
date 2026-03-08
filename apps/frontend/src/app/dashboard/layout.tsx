@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/auth/session";
-import { Navigation } from "@/components/features/navigation/Navigation";
+import { TopNavigation, BottomNavigation } from "@/components/features/navigation/Navigation";
 import { SocketProvider } from "@/components/providers/SocketProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { getProfileStats } from "./profileActions";
@@ -22,18 +22,21 @@ export default async function DashboardLayout({
     return (
         <SocketProvider relationshipId={relationshipId || ""}>
             <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
-                <Navigation />
+                <TopNavigation xp={xp || 0} level={level || 1} />
 
                 {/* Main Content Area */}
-                <main className="flex-1 overflow-y-auto mb-16 md:mb-0 relative">
+                {/* Notice the mb-16 to leave space for the Bottom Navigation */}
+                <main className="flex-1 overflow-y-auto pb-20 relative">
                     <div className="mx-auto max-w-5xl h-full p-4 md:p-8 flex flex-col">
                         <div className="flex-1 overflow-y-auto">
                             {children}
                         </div>
                     </div>
                 </main>
+
+                <BottomNavigation />
             </div>
             <Toaster position="top-center" richColors />
-        </SocketProvider >
+        </SocketProvider>
     );
 }
