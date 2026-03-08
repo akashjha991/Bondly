@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { ProfileForm } from "@/components/features/profile/ProfileForm";
 import { RelationshipSettings } from "@/components/features/profile/RelationshipSettings";
 import { AccountSettings } from "@/components/features/profile/AccountSettings";
+import { AppearanceSettings } from "@/components/features/profile/AppearanceSettings";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
@@ -52,6 +53,8 @@ export default async function ProfilePage() {
             <ProfileForm initialUser={fetchedUser as any} />
 
             <RelationshipSettings relationship={relationshipData} />
+
+            <AppearanceSettings />
 
             <AccountSettings />
         </div>

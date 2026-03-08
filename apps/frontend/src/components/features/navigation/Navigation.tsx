@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const navItems = [
     { href: "/dashboard", label: "Chat", icon: MessageCircleHeart },
@@ -59,7 +58,6 @@ export function Navigation() {
             </div>
 
             <div className="hidden md:flex flex-col gap-2 w-full mt-auto">
-                <ThemeToggle isDesktop={true} />
                 <Button
                     variant="ghost"
                     className="w-full justify-start text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
@@ -68,11 +66,6 @@ export function Navigation() {
                     <LogOut className="w-5 h-5 mr-3" />
                     Log Out
                 </Button>
-            </div>
-
-            {/* Mobile Theme Toggle */}
-            <div className="md:hidden absolute top-[-3rem] right-4">
-                <ThemeToggle isDesktop={false} />
             </div>
         </nav>
     );
