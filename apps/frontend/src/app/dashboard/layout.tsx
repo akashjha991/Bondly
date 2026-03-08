@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 
     return (
         <SocketProvider relationshipId={relationshipId || ""}>
-            <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+            <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
                 <Navigation />
 
                 {/* Main Content Area */}
@@ -34,6 +34,6 @@ export default async function DashboardLayout({
                 </main>
             </div>
             <Toaster position="top-center" richColors />
-        </SocketProvider>
+        </SocketProvider >
     );
 }
