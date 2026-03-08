@@ -20,16 +20,27 @@ export async function POST(req: NextRequest) {
             return new Response("No file provided", { status: 400 });
         }
 
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const imageUrl = await uploadImageToCloudinary(buffer, file.type);
+        // Forward the FormData to the backend Express server
+        const backendUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:10000";
+        const backendUploadRes = await fetch(`${backendUrl}/api/upload`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${(authSession as any)?.token || ""}`,
+            },
+            body: formData,
+        });
+
+        if (!backendUploadRes.ok) {
+            const errorData = await backendUploadRes.text();
+            throw new Error(`Backend upload failed: ${errorData}`);
+        }
+
+        const data = await backendUploadRes.json();
+        const imageUrl = data.imageUrl; // The backend returns { imageUrl: string }
 
         return new Response(JSON.stringify({ url: imageUrl }), { status: 200 });
     } catch (error: any) {
         console.error("Upload error details:", error);
-        console.error("Error message:", error?.message);
-        if (error?.response) {
-            console.error("Cloudinary response:", error.response);
-        }
         return new Response(JSON.stringify({ error: "Failed to upload image", details: error?.message }), { status: 500 });
     }
 }
