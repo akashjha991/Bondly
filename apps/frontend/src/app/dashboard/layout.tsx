@@ -26,7 +26,7 @@ export default async function DashboardLayout({
 
                 {/* Main Content Area */}
                 {/* Notice the pb layout to leave space for the Bottom Navigation */}
-                <main className="flex-1 overflow-hidden flex flex-col pb-14 sm:pb-16 relative w-full">
+                <main className="flex-1 overflow-hidden flex flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pb-20 relative w-full">
                     <div className="mx-auto w-full max-w-5xl h-full flex flex-col sm:p-4">
                         <div className="flex-1 overflow-hidden flex flex-col relative w-full h-full">
                             {children}
