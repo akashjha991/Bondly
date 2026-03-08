@@ -21,20 +21,25 @@ export default async function DashboardLayout({
 
     return (
         <SocketProvider relationshipId={relationshipId || ""}>
-            <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
-                <TopNavigation xp={xp || 0} level={level || 1} />
+            <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
+                {/* Fixed Top Nav */}
+                <div className="shrink-0 z-50">
+                    <TopNavigation xp={xp || 0} level={level || 1} />
+                </div>
 
-                {/* Main Content Area */}
-                {/* Notice the pb layout to leave space for the Bottom Navigation */}
-                <main className="flex-1 overflow-hidden flex flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pb-20 relative w-full">
-                    <div className="mx-auto w-full max-w-5xl h-full flex flex-col sm:p-4">
-                        <div className="flex-1 overflow-hidden flex flex-col relative w-full h-full">
+                {/* Main Content Area strictly bounded between Top and Bottom Navs */}
+                <main className="flex-1 overflow-hidden relative w-full flex flex-col">
+                    <div className="w-full h-full flex flex-col max-w-5xl mx-auto">
+                        <div className="flex-1 overflow-hidden w-full h-full relative">
                             {children}
                         </div>
                     </div>
                 </main>
 
-                <BottomNavigation />
+                {/* Fixed Bottom Nav spacer equivalent for mobile sizing padding */}
+                <div className="shrink-0 z-50 h-[calc(3.5rem+env(safe-area-inset-bottom))] sm:h-[calc(4rem+env(safe-area-inset-bottom))] w-full">
+                    <BottomNavigation />
+                </div>
             </div>
             <Toaster position="top-center" richColors />
         </SocketProvider>
