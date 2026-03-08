@@ -1,0 +1,216 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id             String        @id @default(cuid())
+  name           String?
+  email          String?       @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  bondlyId       String?       @unique // Custom unique ID for invites
+  
+  relationshipId String?
+  relationship   Relationship? @relation(fields: [relationshipId], references: [id])
+  
+  xp             Int           @default(0)
+  level          Int           @default(1)
+  
+  accounts       Account[]
+  sessions       Session[]
+  
+  messagesSent   Message[]     @relation("Sender")
+  memories       Memory[]
+  moods          Mood[]
+  expensesPaid   Expense[]     @relation("ExpensePayer")
+  notes          Note[]
+  eventsCreated  CalendarEvent[]
+  xpLogs         XPLog[]
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Relationship {
+  id              String   @id @default(cuid())
+  inviteCode      String   @unique
+  anniversaryDate DateTime?
+  
+  users           User[]
+  messages        Message[]
+  memories        Memory[]
+  moods           Mood[]
+  expenses        Expense[]
+  notes           Note[]
+  events          CalendarEvent[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  senderId       String
+  sender         User         @relation("Sender", fields: [senderId], references: [id])
+  relationshipId String
+  relationship   Relationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  status         MessageStatus @default(SENT)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([relationshipId, createdAt])
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+model Memory {
+  id             String       @id @default(cuid())
+  imageUrl       String
+  caption        String?
+  date           DateTime     @default(now())
+  
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  relationshipId String
+  relationship   Relationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([relationshipId, date])
+}
+
+model Mood {
+  id             String       @id @default(cuid())
+  emoji          String
+  date           DateTime     @default(now()) // Stored as DATE part mostly for daily unique check
+  
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  relationshipId String
+  relationship   Relationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+
+  // Ensure only one mood per user per day in the application layer
+  @@index([relationshipId, date])
+}
+
+model Expense {
+  id             String       @id @default(cuid())
+  amount         Float
+  description    String
+  date           DateTime     @default(now())
+  splitType      SplitType    @default(EQUAL)
+  
+  paidById       String
+  paidBy         User         @relation("ExpensePayer", fields: [paidById], references: [id])
+  
+  relationshipId String
+  relationship   Relationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([relationshipId, date])
+}
+
+enum SplitType {
+  EQUAL
+  FULL // The other person owes full amount
+  CUSTOM
+}
+
+model Note {
+  id             String       @id @default(cuid())
+  title          String
+  content        String       @db.Text
+  
+  authorId       String
+  author         User         @relation(fields: [authorId], references: [id])
+  relationshipId String
+  relationship   Relationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  
+  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime     @default(now())
+
+  @@index([relationshipId, updatedAt])
+}
+
+model CalendarEvent {
+  id             String       @id @default(cuid())
+  title          String
+  description    String?
+  date           DateTime     // Event specific date/time
+  isAnniversary  Boolean      @default(false)
+  
+  creatorId      String
+  creator        User         @relation(fields: [creatorId], references: [id])
+  relationshipId String
+  relationship   Relationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([relationshipId, date])
+}
+
+model XPLog {
+  id             String       @id @default(cuid())
+  amount         Int
+  reason         String
+  
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+
+  @@index([userId, createdAt])
+}

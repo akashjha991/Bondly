@@ -1,0 +1,8 @@
+﻿prisma.config.ts(4,30): error TS2307: Cannot find module 'prisma/config' or its corresponding type declarations.
+src/app/api/auth/register/route.ts(1,10): error TS2614: Module '"next-auth/next"' has no exported member 'NextResponse'. Did you mean to use 'import NextResponse from "next-auth/next"' instead?
+src/components/features/auth/AuthForm.tsx(107,52): error TS2339: Property 'name' does not exist on type 'FieldErrors<{ email: string; password: string; }>'.
+src/components/features/calendar/CalendarTracker.tsx(11,26): error TS2307: Cannot find module '@/components/ui/checkbox' or its corresponding type declarations.
+src/components/features/navigation/Navigation.tsx(16,24): error TS2307: Cannot find module '../ui/button' or its corresponding type declarations.
+src/components/features/profile/ProfileHeader.tsx(45,98): error TS2322: Type '{ value: number; className: string; indicatorcolor: string; }' is not assignable to type 'IntrinsicAttributes & ProgressProps & RefAttributes<HTMLDivElement>'.
+  Property 'indicatorcolor' does not exist on type 'IntrinsicAttributes & ProgressProps & RefAttributes<HTMLDivElement>'.
+src/middleware.ts(1,10): error TS2614: Module '"next-auth/middleware"' has no exported member 'NextResponse'. Did you mean to use 'import NextResponse from "next-auth/middleware"' instead?
