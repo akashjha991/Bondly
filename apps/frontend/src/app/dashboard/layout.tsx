@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 
     return (
         <SocketProvider relationshipId={relationshipId || ""}>
-            <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
+            <div className="flex flex-col absolute inset-0 bg-slate-50 dark:bg-slate-950 overflow-hidden">
                 {/* Fixed Top Nav */}
                 <div className="shrink-0 z-50">
                     <TopNavigation xp={xp || 0} level={level || 1} />
