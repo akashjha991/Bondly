@@ -22,10 +22,13 @@ export async function POST(req: NextRequest) {
 
         // Forward the FormData to the backend Express server
         const backendUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:10000";
+        const cookieHeader = req.headers.get("cookie") || "";
+
         const backendUploadRes = await fetch(`${backendUrl}/api/upload`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${(authSession as any)?.token || ""}`,
+                Cookie: cookieHeader,
             },
             body: formData,
         });
