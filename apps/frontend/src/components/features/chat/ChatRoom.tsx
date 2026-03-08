@@ -92,11 +92,6 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
 
     return (
         <div className="flex flex-col h-full bg-white dark:bg-slate-900 sm:rounded-xl shadow-[0_-2px_10px_rgba(0,0,0,0.02)] sm:shadow-sm border-t sm:border border-slate-200 dark:border-slate-800 -mx-4 sm:mx-0 overflow-hidden relative">
-            <div className="p-3 sm:p-4 shrink-0 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-950/50 relative z-10 backdrop-blur-md">
-                <h2 className="text-sm sm:text-lg font-semibold flex items-center gap-2">
-                    Live Chat <span className={cn("inline-block w-2.5 h-2.5 rounded-full", isConnected ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-500")} />
-                </h2>
-            </div>
 
             <ScrollArea className="flex-1 w-full" ref={scrollRef}>
                 <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full p-4">
