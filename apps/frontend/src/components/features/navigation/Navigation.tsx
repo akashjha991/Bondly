@@ -110,6 +110,14 @@ export function TopNavigation({ xp, level }: { xp?: number, level?: number }) {
 }
 
 // --- Bottom Navigation (Primary Features) ---
+const bottomNavItems = [
+    { href: "/dashboard", label: "Chat", icon: MessageCircleHeart },
+    { href: "/dashboard/memories", label: "Memories", icon: ImageIcon },
+    { href: "/dashboard/notes", label: "Notes", icon: StickyNote },
+    { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
+    { href: "/dashboard/profile", label: "Profile", icon: User },
+];
+
 export function BottomNavigation() {
     const pathname = usePathname();
 
@@ -119,48 +127,27 @@ export function BottomNavigation() {
             <Link
                 href={href}
                 className={cn(
-                    "flex flex-col items-center justify-center w-16 h-16 transition-colors group",
-                    isActive ? "text-rose-500" : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    "flex flex-col items-center justify-center w-12 h-14 sm:h-16 transition-colors group",
+                    isActive ? "text-slate-900 dark:text-slate-100" : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                 )}
             >
-                <Icon className={cn("w-6 h-6 mb-1 transition-transform group-hover:scale-110", isActive && "fill-rose-500/20")} strokeWidth={isActive ? 2.5 : 2} />
-                <span className="text-[10px] font-medium">{label}</span>
+                <Icon
+                    className={cn(
+                        "w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-active:scale-90",
+                        isActive && "text-slate-900 dark:text-slate-100"
+                    )}
+                    strokeWidth={isActive ? 2.5 : 2}
+                />
             </Link>
         );
     };
 
     return (
-        <div className="fixed bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.5)]">
-            <div className="flex justify-around items-center h-16 max-w-md mx-auto relative px-2">
-
-                {/* Left side items */}
-                <div className="flex gap-4">
-                    <NavIconLink href="/dashboard/memories" icon={ImageIcon} label="Memories" />
-                    <NavIconLink href="/dashboard/notes" icon={StickyNote} label="Notes" />
-                </div>
-
-                {/* Center Main Action - Chat */}
-                <div className="absolute left-1/2 -top-6 -translate-x-1/2 flex justify-center w-16">
-                    <Link
-                        href="/dashboard"
-                        className={cn(
-                            "flex items-center justify-center w-14 h-14 rounded-full shadow-xl transition-transform hover:scale-105 active:scale-95 text-white",
-                            pathname === "/dashboard"
-                                ? "bg-gradient-to-tr from-pink-600 to-rose-500 ring-4 ring-rose-100 dark:ring-rose-900/30"
-                                : "bg-gradient-to-tr from-pink-500 to-rose-400"
-                        )}
-                    >
-                        <MessageCircleHeart className="w-7 h-7" />
-                    </Link>
-                </div>
-
-                {/* Right side item + Spacer to balance layout (4 total items) */}
-                <div className="flex gap-4 items-center">
-                    <NavIconLink href="/dashboard/calendar" icon={CalendarDays} label="Calendar" />
-                    {/* Invisible Spacer matched to the width of one NavIconLink to keep "Chat" strictly centered between 4 items */}
-                    <div className="w-16 h-16" />
-                </div>
-
+        <div className="fixed bottom-0 w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)]">
+            <div className="flex justify-between items-center h-14 sm:h-16 max-w-md mx-auto px-6 sm:px-8">
+                {bottomNavItems.map(item => (
+                    <NavIconLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+                ))}
             </div>
         </div>
     );
