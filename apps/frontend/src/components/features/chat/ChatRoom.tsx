@@ -5,7 +5,7 @@ import { useSocket } from "@/components/providers/SocketProvider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send } from "lucide-react";
+import { Send, Camera, Mic, Image as ImageIcon, Smile, PlusCircle } from "lucide-react";
 import { sendMessage } from "@/app/dashboard/actions";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -136,17 +136,47 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
                 </div>
             </ScrollArea>
 
-            <div className="p-3 sm:p-4 shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-10">
-                <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto w-full items-end">
-                    <Input
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type a message..."
-                        className="flex-1 rounded-2xl bg-slate-100 dark:bg-slate-800 border-transparent focus-visible:ring-rose-500 min-h-[44px]"
-                    />
-                    <Button type="submit" size="icon" className="rounded-full bg-rose-500 hover:bg-rose-600 h-11 w-11 shrink-0">
-                        <Send className="w-5 h-5 ml-0.5" />
-                    </Button>
+            <div className="p-2 sm:p-4 shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-10">
+                <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto w-full items-center">
+                    {/* Camera Button (Left side) */}
+                    <button
+                        type="button"
+                        className="flex items-center justify-center w-10 h-10 shrink-0 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
+                    >
+                        <Camera className="w-5 h-5" />
+                    </button>
+
+                    {/* Input Pill Container */}
+                    <div className="flex-1 flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-full px-4 h-[44px] transition-all focus-within:ring-1 focus-within:ring-slate-300 dark:focus-within:ring-slate-700">
+                        <Input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Message..."
+                            className="flex-1 bg-transparent border-0 focus-visible:ring-0 px-0 shadow-none h-full placeholder:text-slate-500"
+                        />
+
+                        {/* Right Side Icons or Send Button */}
+                        {input.trim() ? (
+                            <button type="submit" className="text-blue-600 hover:text-blue-700 font-semibold text-sm ml-2">
+                                Send
+                            </button>
+                        ) : (
+                            <div className="flex items-center gap-3 md:gap-4 text-slate-500 ml-2 shrink-0">
+                                <button type="button" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                                    <Mic className="w-[20px] h-[20px]" />
+                                </button>
+                                <button type="button" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                                    <ImageIcon className="w-[20px] h-[20px]" />
+                                </button>
+                                <button type="button" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors hidden sm:block">
+                                    <Smile className="w-[20px] h-[20px]" />
+                                </button>
+                                <button type="button" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                                    <PlusCircle className="w-[20px] h-[20px]" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </form>
             </div>
         </div>
