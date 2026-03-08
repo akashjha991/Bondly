@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: bondly-backend
+    env: node
+    # Since this is a monorepo, we point Render exactly to the backend folder
+    rootDir: apps/backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        sync: false # You will paste your Vercel URL here in the Render dashboard!
+      - key: DATABASE_URL
+        sync: false # You will paste your Prisma URL here in the Render dashboard!
+      - key: NEXTAUTH_SECRET
+        sync: false # You will paste your NextAuth Secret here in the Render dashboard!
