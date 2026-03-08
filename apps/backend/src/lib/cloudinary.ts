@@ -16,7 +16,7 @@ export const uploadImageToCloudinary = async (
             {
                 folder: "bondly",
             },
-            (error, result) => {
+            (error: any, result: any) => {
                 if (error || !result) {
                     console.error("Cloudinary upload failed:", error);
                     return reject(new Error("Upload failed"));
