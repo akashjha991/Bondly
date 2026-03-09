@@ -28,9 +28,9 @@ export default async function DashboardLayout({
                 </div>
 
                 {/* Main Content Area strictly bounded between Top and Bottom Navs */}
-                <main className="flex-1 overflow-hidden relative w-full flex flex-col">
+                <main className="flex-1 relative w-full flex flex-col min-h-0">
                     <div className="w-full h-full flex flex-col max-w-5xl mx-auto">
-                        <div className="flex-1 overflow-hidden w-full h-full relative">
+                        <div className="flex-1 w-full h-full relative">
                             {children}
                         </div>
                     </div>
