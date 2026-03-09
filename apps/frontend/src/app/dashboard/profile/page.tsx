@@ -45,25 +45,27 @@ export default async function ProfilePage() {
     } : null;
 
     return (
-        <div className="max-w-2xl mx-auto py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl tracking-tight font-bold">Settings</h1>
-                <p className="text-slate-500 mt-2">Manage your account details and relationship settings.</p>
-            </div>
-
-            <ProfileForm initialUser={fetchedUser as any} />
-
-            {fetchedUser.relationshipId && (
-                <div className="mt-8">
-                    <ProfileHeader xp={fetchedUser.xp} level={fetchedUser.level} />
+        <div className="h-full overflow-y-auto">
+            <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 pb-24">
+                <div className="mb-8">
+                    <h1 className="text-3xl tracking-tight font-bold">Settings</h1>
+                    <p className="text-slate-500 mt-2">Manage your account details and relationship settings.</p>
                 </div>
-            )}
 
-            <RelationshipSettings relationship={relationshipData} />
+                <ProfileForm initialUser={fetchedUser as any} />
 
-            <AppearanceSettings />
+                {fetchedUser.relationshipId && (
+                    <div className="mt-8">
+                        <ProfileHeader xp={fetchedUser.xp} level={fetchedUser.level} />
+                    </div>
+                )}
 
-            <AccountSettings />
+                <RelationshipSettings relationship={relationshipData} />
+
+                <AppearanceSettings />
+
+                <AccountSettings />
+            </div>
         </div>
     );
 }
