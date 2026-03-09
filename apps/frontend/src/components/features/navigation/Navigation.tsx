@@ -20,7 +20,7 @@ import {
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // --- Top Navigation (Hamburger Menu) ---
 const topNavSecondaryItems = [
@@ -120,6 +120,31 @@ const bottomNavItems = [
 
 export function BottomNavigation() {
     const pathname = usePathname();
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const handleFocusIn = (e: FocusEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                setIsKeyboardVisible(true);
+            }
+        };
+        const handleFocusOut = (e: FocusEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                setIsKeyboardVisible(false);
+            }
+        };
+
+        // Adding passive listeners to document for global focus tracking
+        document.addEventListener('focusin', handleFocusIn);
+        document.addEventListener('focusout', handleFocusOut);
+
+        return () => {
+            document.removeEventListener('focusin', handleFocusIn);
+            document.removeEventListener('focusout', handleFocusOut);
+        };
+    }, []);
 
     const NavIconLink = ({ href, icon: Icon, label }: { href: string, icon: any, label: string }) => {
         const isActive = pathname === href;
@@ -143,7 +168,10 @@ export function BottomNavigation() {
     };
 
     return (
-        <div className="fixed bottom-0 w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)]">
+        <div className={cn(
+            "fixed bottom-0 w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] transition-transform duration-300",
+            isKeyboardVisible ? "translate-y-full sm:translate-y-0" : "translate-y-0"
+        )}>
             <div className="flex justify-between items-center h-14 sm:h-16 max-w-md mx-auto px-6 sm:px-8">
                 {bottomNavItems.map(item => (
                     <NavIconLink key={item.href} href={item.href} icon={item.icon} label={item.label} />

@@ -52,3 +52,19 @@ export async function getMyBondlyId() {
     const user = await db.user.findUnique({ where: { id: userId }, select: { bondlyId: true } });
     return user?.bondlyId || "BOND123";
 }
+
+export async function getPartnerInfo() {
+    const session = await getAuthSession();
+    const userId = session?.user?.id;
+    if (!userId) return null;
+
+    const user = await db.user.findUnique({ where: { id: userId }, select: { relationshipId: true } });
+    if (!user?.relationshipId) return null;
+
+    const partner = await db.user.findFirst({
+        where: { relationshipId: user.relationshipId, id: { not: userId } },
+        select: { id: true, name: true, image: true }
+    });
+
+    return partner;
+}

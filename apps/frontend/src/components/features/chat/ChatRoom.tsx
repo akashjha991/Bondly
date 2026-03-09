@@ -25,7 +25,13 @@ type Message = {
     };
 };
 
-export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
+export function ChatRoom({
+    initialMessages,
+    partner
+}: {
+    initialMessages: Message[];
+    partner?: { name: string | null; image: string | null } | null;
+}) {
     const { data: session } = useSession();
     const user = session?.user;
     const { socket, isConnected, relationshipId } = useSocket();
@@ -93,7 +99,27 @@ export function ChatRoom({ initialMessages }: { initialMessages: Message[] }) {
     return (
         <div className="flex flex-col h-full bg-white dark:bg-slate-900 sm:rounded-xl shadow-[0_-2px_10px_rgba(0,0,0,0.02)] sm:shadow-sm border-t sm:border border-slate-200 dark:border-slate-800 -mx-4 sm:mx-0 overflow-hidden relative">
 
-            <ScrollArea className="flex-1 w-full" ref={scrollRef}>
+            {/* Fixed Partner Header */}
+            {partner && (
+                <div className="shrink-0 p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm z-10 flex items-center gap-3">
+                    <Avatar className="w-10 h-10 border border-slate-100 dark:border-slate-800 shadow-sm">
+                        <AvatarImage src={partner.image || ""} />
+                        <AvatarFallback className="bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-100 font-semibold">
+                            {partner.name?.substring(0, 2).toUpperCase() || "PA"}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-slate-900 dark:text-white line-clamp-1">
+                            {partner.name || "Partner"}
+                        </span>
+                        <span className="text-xs text-rose-500 font-medium flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            <ScrollArea className="flex-1 min-h-0 w-full" ref={scrollRef}>
                 <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full p-4">
                     {messages.map((msg) => {
                         const isMe = msg.senderId === user?.id;
