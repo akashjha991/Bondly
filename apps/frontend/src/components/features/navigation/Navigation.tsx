@@ -111,7 +111,7 @@ export function TopNavigation({ xp, level }: { xp?: number, level?: number }) {
 
 // --- Bottom Navigation (Primary Features) ---
 const bottomNavItems = [
-    { href: "/dashboard/chat", label: "Chat", icon: MessageCircleHeart },
+    { href: "/dashboard", label: "Chat", icon: MessageCircleHeart },
     { href: "/dashboard/memories", label: "Memories", icon: ImageIcon },
     { href: "/dashboard/notes", label: "Notes", icon: StickyNote },
     { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
@@ -148,7 +148,7 @@ export function BottomNavigation() {
 
     const NavIconLink = ({ href, icon: Icon, label }: { href: string, icon: any, label: string }) => {
         // Special case: make sure both /dashboard (recent chats) and /dashboard/chat keep the Chat icon active
-        const isActive = pathname === href || (href === "/dashboard/chat" && pathname === "/dashboard");
+        const isActive = pathname === href || (href === "/dashboard" && pathname === "/dashboard/chat");
 
         return (
             <Link
