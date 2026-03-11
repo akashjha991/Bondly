@@ -28,6 +28,7 @@ export function TopNavigation() {
         size="icon"
         onClick={() => router.push("/dashboard?addMemory=1")}
         className="rounded-full"
+        title="Add memory"
       >
         <Plus className="h-5 w-5 text-[#8B5CF6]" />
       </Button>
@@ -42,7 +43,7 @@ export function BottomNavigation() {
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 pb-safe backdrop-blur md:hidden">
       <div className="mx-auto grid h-16 max-w-md grid-cols-4">
         {mobileItems.map((item) => {
-          const active = pathname === item.href;
+          const active = pathname === item.href || (item.href === "/dashboard" && pathname === "/dashboard/memories");
           const Icon = item.icon;
           return (
             <Link key={item.href} href={item.href} className={cn("flex flex-col items-center justify-center gap-1 text-[11px]", active ? "text-foreground" : "text-muted-foreground")}>

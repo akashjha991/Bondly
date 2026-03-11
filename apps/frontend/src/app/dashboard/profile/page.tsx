@@ -14,5 +14,9 @@ export default async function ProfilePage() {
   });
   if (!user) redirect("/sign-in");
 
-  return <ProfileOverviewCard user={{ name: user.name, image: user.image, xp: user.xp ?? 0, level: user.level ?? 1 }} />;
+  return (
+    <ProfileOverviewCard
+      user={{ name: user.name, image: user.image, xp: user.xp ?? 0, level: user.level ?? 1 }}
+    />
+  );
 }

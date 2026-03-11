@@ -9,7 +9,7 @@ type MemoryCardProps = {
 
 export function MemoryCard({ imageUrl, caption, date }: MemoryCardProps) {
   return (
-    <Card className="overflow-hidden rounded-2xl border-border/70 bg-card shadow-[0_4px_14px_rgba(15,15,20,0.08)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.35)]">
+    <Card className="overflow-hidden rounded-[16px] border-border/70 bg-card shadow-[0_4px_14px_rgba(15,15,20,0.08)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.35)]">
       <div className="aspect-square w-full overflow-hidden bg-muted/30">
         <img src={imageUrl} alt={caption || "Shared memory"} className="h-full w-full object-cover" loading="lazy" />
       </div>

@@ -62,6 +62,7 @@ export function ChatRoom({ initialMessages, partner }: { initialMessages: Messag
     };
     setMessages((prev) => [...prev, optimistic]);
     setInput("");
+    setIsTyping(false);
     try {
       const saved = await sendMessage(optimistic.content);
       socket?.emit("send-message", { ...saved, room: relationshipId });
@@ -97,14 +98,14 @@ export function ChatRoom({ initialMessages, partner }: { initialMessages: Messag
         </div>
       </header>
 
-      <main ref={containerRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      <main ref={containerRef} className="flex-1 space-y-3 overflow-y-auto bg-gradient-to-b from-background to-background/90 px-4 py-4">
         {messages.map((msg) => (
           <ChatBubble key={msg.id} content={msg.content} createdAt={msg.createdAt} isMe={msg.senderId === session?.user?.id} status={msg.status} />
         ))}
 
         {isTyping && (
           <div className="max-w-[80%] rounded-[20px] rounded-bl-md border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-sm">
-            Typing...
+            Typing…
           </div>
         )}
       </main>

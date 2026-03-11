@@ -9,7 +9,7 @@ export function ClientLayout({ children }: { children: ReactNode; xp: number; le
   const isChatPage = pathname === "/dashboard/chat";
 
   if (isChatPage) {
-    return <div className="h-[100dvh] bg-background">{children}</div>;
+    return <div className="h-[100dvh] overflow-hidden bg-background">{children}</div>;
   }
 
   return (

@@ -25,6 +25,15 @@ export function MemoryTimeline({ initialMemories }: { initialMemories: Memory[] 
     if (searchParams.get("addMemory") === "1") setIsOpen(true);
   }, [searchParams]);
 
+
+
+  const handleModalOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open && searchParams.get("addMemory") === "1") {
+      router.replace("/dashboard");
+    }
+  };
+
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) return;
@@ -57,7 +66,7 @@ export function MemoryTimeline({ initialMemories }: { initialMemories: Memory[] 
         ))}
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={handleModalOpenChange}>
         <DialogContent className="rounded-3xl">
           <DialogHeader>
             <DialogTitle>Add Memory</DialogTitle>
