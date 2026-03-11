@@ -4,120 +4,117 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-    MessageCircleHeart,
-    Image as ImageIcon,
     CalendarDays,
-    Wallet,
-    StickyNote,
     Smile,
     User,
-    LogOut,
-    Menu,
-    Settings,
-    Trophy,
-    Home
+    Home,
+    PlusCircle,
+    MessageCircleHeart,
+    LogOut
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 
-// --- Top Navigation (Hamburger Menu) ---
-const topNavSecondaryItems = [
-    { href: "/dashboard/profile", label: "Profile & Settings", icon: Settings },
-    { href: "/dashboard/mood", label: "Mood", icon: Smile },
-    { href: "/dashboard/expenses", label: "Expenses", icon: Wallet },
-];
-
+// --- Top Navigation (Global Header) ---
 export function TopNavigation({ xp, level }: { xp?: number, level?: number }) {
-    const pathname = usePathname();
-    const [isOpen, setIsOpen] = useState(false);
-
     return (
-        <nav className="flex items-center justify-between w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 h-16 shrink-0 z-50 shadow-sm relative">
+        <nav className="flex md:hidden items-center justify-between w-full bg-background border-b border-border px-4 h-16 shrink-0 z-50 shadow-sm relative">
             <div className="flex items-center">
-                <Link href="/dashboard" className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
-                    <Home className="w-6 h-6 text-rose-500" />
+                <Link href="/dashboard" className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-bondly-pink to-bondly-purple bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+                    <Home className="w-6 h-6 text-bondly-pink" />
                     <span>Bondly</span>
                 </Link>
             </div>
 
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
-                        <Menu className="h-6 w-6 text-slate-700 dark:text-slate-300" />
-                        <span className="sr-only">Toggle navigation menu</span>
+            <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="hover:bg-accent rounded-full text-foreground/80 hover:text-foreground">
+                    <PlusCircle className="h-6 w-6" />
+                </Button>
+                <Link href="/dashboard/chat">
+                    <Button variant="ghost" size="icon" className="hover:bg-accent rounded-full text-foreground/80 hover:text-foreground">
+                        <MessageCircleHeart className="h-6 w-6" />
                     </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="flex flex-col w-[280px] sm:w-[350px] p-0 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-                    <SheetHeader className="p-6 border-b border-slate-100 dark:border-slate-800 text-left bg-slate-50 dark:bg-slate-900/50">
-                        <SheetTitle className="text-xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
-                            Menu
-                        </SheetTitle>
-
-                        {/* Level & XP injected into the Hamburger Menu */}
-                        {level !== undefined && xp !== undefined && (
-                            <div className="flex items-center gap-3 mt-4 p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                                <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded-full">
-                                    <Trophy className="w-5 h-5 text-amber-500" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Level {level}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">{xp} XP</p>
-                                </div>
-                            </div>
-                        )}
-                    </SheetHeader>
-
-                    <div className="flex flex-col flex-1 overflow-y-auto px-4 py-6 gap-2">
-                        {topNavSecondaryItems.map((item) => {
-                            const isActive = pathname === item.href;
-                            const Icon = item.icon;
-
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className={cn(
-                                        "flex items-center gap-3 p-3 rounded-xl transition-all duration-200 w-full",
-                                        isActive
-                                            ? "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 font-semibold"
-                                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100"
-                                    )}
-                                >
-                                    <Icon className={cn("w-5 h-5", isActive ? "text-rose-500" : "")} />
-                                    <span className="text-sm font-medium">{item.label}</span>
-                                </Link>
-                            );
-                        })}
-                    </div>
-
-                    <div className="p-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl transition-all mx-auto"
-                            onClick={() => signOut({ callbackUrl: "/sign-in" })}
-                        >
-                            <LogOut className="w-5 h-5 mr-3" />
-                            <span className="font-semibold">Log Out</span>
-                        </Button>
-                    </div>
-                </SheetContent>
-            </Sheet>
+                </Link>
+            </div>
         </nav>
     );
 }
 
-// --- Bottom Navigation (Primary Features) ---
-const bottomNavItems = [
-    { href: "/dashboard", label: "Chat", icon: MessageCircleHeart },
-    { href: "/dashboard/memories", label: "Memories", icon: ImageIcon },
-    { href: "/dashboard/notes", label: "Notes", icon: StickyNote },
+// --- Navigation Items ---
+const navItems = [
+    { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
+    { href: "/dashboard/mood", label: "Mood", icon: Smile },
     { href: "/dashboard/profile", label: "Profile", icon: User },
 ];
 
+// --- Desktop Sidebar (Replaces BottomNav on larger screens) ---
+export function DesktopSidebar() {
+    const pathname = usePathname();
+
+    const NavItem = ({ href, icon: Icon, label }: { href: string; icon: any; label: string }) => {
+        const isActive = pathname === href || (href === "/dashboard" && pathname === "/dashboard/memories");
+
+        return (
+            <Link
+                href={href}
+                className={cn(
+                    "flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 group",
+                    isActive
+                        ? "bg-accent text-foreground font-semibold"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                )}
+            >
+                <Icon
+                    className={cn(
+                        "w-6 h-6 transition-transform duration-200 group-active:scale-95",
+                        isActive ? "text-bondly-pink" : ""
+                    )}
+                    strokeWidth={isActive ? 2.5 : 2}
+                />
+                <span className="text-sm font-medium">{label}</span>
+            </Link>
+        );
+    };
+
+    return (
+        <aside className="hidden md:flex flex-col w-64 border-r border-border bg-background h-screen sticky top-0 shrink-0">
+            <div className="p-6">
+                <Link href="/dashboard" className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-bondly-pink to-bondly-purple bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+                    <Home className="w-6 h-6 text-bondly-pink" />
+                    <span>Bondly</span>
+                </Link>
+            </div>
+
+            <nav className="flex-1 px-4 flex flex-col gap-2 mt-4">
+                {navItems.map(item => (
+                    <NavItem key={item.href} href={item.href} icon={item.icon} label={item.label} />
+                ))}
+            </nav>
+
+            <div className="px-4 pb-2">
+                <Link href="/dashboard/chat" className="flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 group text-muted-foreground hover:bg-accent/50 hover:text-foreground">
+                    <MessageCircleHeart className="w-6 h-6 transition-transform duration-200 group-active:scale-95" strokeWidth={2} />
+                    <span className="text-sm font-medium">Chat</span>
+                </Link>
+            </div>
+
+            <div className="p-4 mt-auto border-t border-border">
+                <Button
+                    variant="ghost"
+                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 py-6 rounded-2xl transition-all"
+                    onClick={() => signOut({ callbackUrl: "/sign-in" })}
+                >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    <span className="font-semibold">Log Out</span>
+                </Button>
+            </div>
+        </aside>
+    );
+}
+
+// --- Bottom Navigation (Mobile) ---
 export function BottomNavigation() {
     const pathname = usePathname();
     const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -136,7 +133,6 @@ export function BottomNavigation() {
             }
         };
 
-        // Adding passive listeners to document for global focus tracking
         document.addEventListener('focusin', handleFocusIn);
         document.addEventListener('focusout', handleFocusOut);
 
@@ -147,21 +143,20 @@ export function BottomNavigation() {
     }, []);
 
     const NavIconLink = ({ href, icon: Icon, label }: { href: string, icon: any, label: string }) => {
-        // Special case: make sure both /dashboard (recent chats) and /dashboard/chat keep the Chat icon active
-        const isActive = pathname === href || (href === "/dashboard" && pathname === "/dashboard/chat");
+        const isActive = pathname === href || (href === "/dashboard" && pathname === "/dashboard/memories");
 
         return (
             <Link
                 href={href}
                 className={cn(
                     "flex flex-col items-center justify-center w-12 h-14 sm:h-16 transition-colors group",
-                    isActive ? "text-slate-900 dark:text-slate-100" : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 )}
             >
                 <Icon
                     className={cn(
                         "w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-active:scale-90",
-                        isActive && "text-slate-900 dark:text-slate-100"
+                        isActive && "text-bondly-pink"
                     )}
                     strokeWidth={isActive ? 2.5 : 2}
                 />
@@ -171,11 +166,11 @@ export function BottomNavigation() {
 
     return (
         <div className={cn(
-            "fixed bottom-0 w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] transition-transform duration-300",
-            isKeyboardVisible ? "translate-y-full sm:translate-y-0" : "translate-y-0"
+            "md:hidden fixed bottom-0 w-full bg-background border-t border-border z-50 pb-safe shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] transition-transform duration-300",
+            isKeyboardVisible ? "translate-y-full" : "translate-y-0"
         )}>
             <div className="flex justify-between items-center h-14 sm:h-16 max-w-md mx-auto px-6 sm:px-8">
-                {bottomNavItems.map(item => (
+                {navItems.map(item => (
                     <NavIconLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
                 ))}
             </div>

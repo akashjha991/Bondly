@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSocket } from "@/components/providers/SocketProvider";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Camera, Mic, Image as ImageIcon, Smile, PlusCircle, ArrowLeft, MoreVertical } from "lucide-react";
+import { Send, Camera, Mic, Smile, ArrowLeft, MoreVertical, Check, CheckCheck } from "lucide-react";
 import Link from "next/link";
 import { sendMessage } from "@/app/dashboard/actions";
 import { cn } from "@/lib/utils";
@@ -38,6 +37,7 @@ export function ChatRoom({
     const { socket, isConnected, relationshipId } = useSocket();
     const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [input, setInput] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -45,10 +45,18 @@ export function ChatRoom({
 
         socket.on("receive-message", (msg: Message) => {
             setMessages((prev) => [...prev, msg]);
+            // scroll happens via other effect
+        });
+
+        // Mock typing indicator randomly turning off for demo purposes if implemented
+        socket.on("typing", () => {
+            setIsTyping(true);
+            setTimeout(() => setIsTyping(false), 3000);
         });
 
         return () => {
             socket.off("receive-message");
+            socket.off("typing");
         };
     }, [socket]);
 
@@ -61,7 +69,7 @@ export function ChatRoom({
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
             }
         }
-    }, [messages]);
+    }, [messages, isTyping]);
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,9 +95,8 @@ export function ChatRoom({
                 });
             }
 
-            // Update optimistic msg with real ID
             setMessages((prev) =>
-                prev.map((m) => (m.id === optimisticMsg.id ? savedMsg : m))
+                prev.map((m) => (m.id === optimisticMsg.id ? { ...savedMsg, status: "DELIVERED" } : m))
             );
         } catch (err) {
             console.error("Failed to send message", err);
@@ -98,77 +105,93 @@ export function ChatRoom({
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 sm:bg-white sm:dark:bg-slate-900 sm:rounded-xl shadow-[0_-2px_10px_rgba(0,0,0,0.02)] sm:shadow-sm sm:border border-slate-200 dark:border-slate-800 -mx-4 sm:mx-0 overflow-hidden relative">
+        <div className="flex flex-col h-[100dvh] w-full bg-background overflow-hidden relative">
 
             {/* Fixed Partner Header */}
             {partner && (
-                <div className="shrink-0 p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm z-10 flex items-center justify-between">
+                <div className="shrink-0 pt-safe px-4 pb-3 border-b border-border bg-card/95 backdrop-blur-md z-20 flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-3">
-                        <Link href="/dashboard" className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                        <Link href="/dashboard" className="p-2 -ml-2 text-muted-foreground hover:bg-accent rounded-full transition-colors active:scale-95">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
-                        <Avatar className="w-10 h-10 border border-slate-100 dark:border-slate-800 shadow-sm">
+                        <Avatar className="w-10 h-10 border border-border shadow-sm">
                             <AvatarImage src={partner.image || ""} />
-                            <AvatarFallback className="bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-100 font-semibold">
+                            <AvatarFallback className="bg-bondly-pink/10 text-bondly-pink font-semibold">
                                 {partner.name?.substring(0, 2).toUpperCase() || "PA"}
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                            <span className="font-semibold text-slate-900 dark:text-white line-clamp-1">
+                            <span className="font-bold text-foreground line-clamp-1">
                                 {partner.name || "Partner"}
                             </span>
-                            <span className="text-xs text-emerald-500 dark:text-emerald-400 font-medium">
-                                online
+                            <span className="text-xs text-bondly-pink font-semibold">
+                                {isConnected ? "online" : "connecting..."}
                             </span>
                         </div>
                     </div>
 
-                    <button className="p-2 -mr-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <button className="p-2 -mr-2 text-muted-foreground hover:bg-accent rounded-full transition-colors">
                         <MoreVertical className="w-5 h-5" />
                     </button>
                 </div>
             )}
 
-            <ScrollArea className="flex-1 min-h-0 w-full" ref={scrollRef}>
-                <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full p-4">
-                    {messages.map((msg) => {
+            <div className="absolute inset-0 z-0 bg-background/50 dark:bg-background/80" style={{ backgroundImage: "radial-gradient(var(--border) 1px, transparent 1px)", backgroundSize: "20px 20px", opacity: 0.1 }}></div>
+
+            <ScrollArea className="flex-1 min-h-0 w-full z-10" ref={scrollRef}>
+                <div className="flex flex-col gap-3 max-w-2xl mx-auto w-full p-4 pt-6">
+                    {messages.map((msg, index) => {
                         const isMe = msg.senderId === user?.id;
+                        const prevMsg = index > 0 ? messages[index - 1] : null;
+                        const showAvatar = !isMe && prevMsg?.senderId !== msg.senderId;
+
                         return (
                             <div
                                 key={msg.id}
                                 className={cn(
-                                    "flex w-full group",
+                                    "flex w-full group animate-in slide-in-from-bottom-2 fade-in duration-300",
                                     isMe ? "justify-end" : "justify-start"
                                 )}
                             >
-                                <div className={cn("flex max-w-[85%] sm:max-w-[75%] gap-2 items-end", isMe ? "flex-row-reverse" : "flex-row")}>
+                                <div className={cn("flex max-w-[85%] sm:max-w-[70%] gap-2 items-end", isMe ? "flex-row-reverse" : "flex-row")}>
+
+                                    {/* Partner Avatar snippet omitted if consecutive messages */}
                                     {!isMe && (
-                                        <Avatar className="w-6 h-6 rounded-full shadow-sm shrink-0 border border-slate-100 dark:border-slate-800 mb-5">
-                                            <AvatarImage src={msg.sender?.image || ""} />
-                                            <AvatarFallback className="text-[8px] bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                                {msg.sender?.name?.substring(0, 2).toUpperCase() || "PA"}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <div className="w-6 shrink-0 flex items-end">
+                                            {showAvatar && (
+                                                <Avatar className="w-6 h-6 rounded-full shadow-sm border border-border">
+                                                    <AvatarImage src={msg.sender?.image || ""} />
+                                                    <AvatarFallback className="text-[8px] bg-muted text-muted-foreground">
+                                                        {msg.sender?.name?.substring(0, 2).toUpperCase() || "PA"}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                            )}
+                                        </div>
                                     )}
 
                                     <div className={cn("flex flex-col flex-1 min-w-0", isMe ? "items-end" : "items-start")}>
                                         <div
                                             className={cn(
-                                                "px-4 py-2 rounded-2xl break-words shadow-sm relative",
+                                                "px-4 py-2.5 break-words shadow-sm relative group/bubble transition-all",
                                                 isMe
-                                                    ? "bg-rose-500 text-white rounded-br-sm"
-                                                    : "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-sm border border-slate-100 dark:border-slate-700"
+                                                    ? "bg-gradient-to-r from-bondly-pink to-bondly-purple text-white rounded-[20px] rounded-br-[4px]"
+                                                    : "bg-card text-foreground rounded-[20px] rounded-bl-[4px] border border-border"
                                             )}
                                             style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
                                         >
-                                            {msg.content}
+                                            <span className="leading-snug text-[15px]">{msg.content}</span>
                                             <div className="flex justify-end items-center gap-1 mt-1 -mb-1 opacity-70">
                                                 <span className={cn(
-                                                    "text-[10px]",
-                                                    isMe ? "text-rose-100" : "text-slate-400"
+                                                    "text-[10px] font-medium tracking-wide",
+                                                    isMe ? "text-white/80" : "text-muted-foreground"
                                                 )}>
                                                     {format(new Date(msg.createdAt), "h:mm a")}
                                                 </span>
+                                                {isMe && (
+                                                    <span className="text-white/80">
+                                                        {msg.status === "READ" ? <CheckCheck className="w-[12px] h-[12px]" /> : <Check className="w-[12px] h-[12px]" />}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -176,42 +199,52 @@ export function ChatRoom({
                             </div>
                         );
                     })}
+
+                    {/* Typing Indicator */}
+                    {isTyping && (
+                        <div className="flex w-full justify-start animate-in fade-in duration-300 pl-8">
+                            <div className="bg-card border border-border px-4 py-3 rounded-full rounded-bl-sm shadow-sm flex gap-1 items-center">
+                                <div className="w-1.5 h-1.5 bg-bondly-pink rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <div className="w-1.5 h-1.5 bg-bondly-pink rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <div className="w-1.5 h-1.5 bg-bondly-pink rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </ScrollArea>
 
-            <div className="p-2 sm:p-4 shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-10">
-                <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto w-full items-center">
-                    {/* Camera Button (Left side) */}
+            {/* Sticky Bottom Input */}
+            <div className="p-3 sm:p-4 shrink-0 bg-background/95 backdrop-blur-md z-20 pb-safe shadow-[0_-4px_20px_-15px_rgba(0,0,0,0.1)]">
+                <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto w-full items-end">
+
                     <button
                         type="button"
-                        className="flex items-center justify-center w-10 h-10 shrink-0 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
+                        className="flex items-center justify-center w-11 h-11 shrink-0 rounded-full bg-accent hover:bg-muted text-foreground transition-colors mb-[2px]"
                     >
-                        <Camera className="w-5 h-5" />
+                        <Camera className="w-5 h-5 text-muted-foreground" />
                     </button>
 
-                    {/* Input Pill Container */}
-                    <div className="flex-1 flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-full px-4 h-[44px] transition-all focus-within:ring-1 focus-within:ring-slate-300 dark:focus-within:ring-slate-700">
+                    <div className="flex-1 flex items-end bg-card border border-border rounded-3xl p-1.5 transition-all focus-within:ring-2 focus-within:ring-bondly-pink/30 shadow-sm relative min-h-[48px]">
+                        <button type="button" className="p-2 text-muted-foreground hover:text-bondly-pink transition-colors">
+                            <Smile className="w-5 h-5" />
+                        </button>
+
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Message..."
-                            className="flex-1 bg-transparent border-0 focus-visible:ring-0 px-0 shadow-none h-full placeholder:text-slate-500"
+                            className="flex-1 bg-transparent border-0 focus-visible:ring-0 px-1 shadow-none py-2 resize-none rounded-none text-[15px] placeholder:text-muted-foreground"
+                            autoComplete="off"
                         />
 
-                        {/* Right Side Icons or Send Button */}
                         {input.trim() ? (
-                            <button type="submit" className="flex items-center justify-center p-2 ml-1 text-white bg-rose-500 hover:bg-rose-600 rounded-full transition-colors shrink-0 shadow-sm">
-                                <Send className="w-4 h-4" />
+                            <button type="submit" className="flex items-center justify-center p-2 text-white bg-gradient-to-r from-bondly-pink to-bondly-purple hover:opacity-90 rounded-full transition-all shrink-0 shadow-md transform scale-100 mb-0.5 mr-0.5 w-[34px] h-[34px]">
+                                <Send className="w-4 h-4 ml-0.5" />
                             </button>
                         ) : (
-                            <div className="flex items-center gap-2 md:gap-3 text-slate-500 ml-2 shrink-0">
-                                <button type="button" className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                                    <Camera className="w-5 h-5" />
-                                </button>
-                                <button type="button" className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors hidden sm:block">
-                                    <Mic className="w-[20px] h-[20px]" />
-                                </button>
-                            </div>
+                            <button type="button" className="p-2 text-muted-foreground hover:text-foreground transition-colors mr-1">
+                                <Mic className="w-5 h-5" />
+                            </button>
                         )}
                     </div>
                 </form>
