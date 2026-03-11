@@ -19,17 +19,12 @@ export default async function MoodPage() {
         select: {
             xp: true,
             level: true,
-            relationship: {
-                select: {
-                    streakDays: true
-                }
-            }
         }
     });
 
     const xp = fetchedUser?.xp || 0;
     const level = fetchedUser?.level || 1;
-    const streak = fetchedUser?.relationship?.streakDays || 0;
+    const streak = history.length;
 
     return (
         <div className="h-full pt-8 pb-16">
