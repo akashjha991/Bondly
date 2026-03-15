@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ export function MemoryTimeline({ initialMemories }: { initialMemories: Memory[] 
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [year, setYear] = useState<string>("all");
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -25,14 +26,23 @@ export function MemoryTimeline({ initialMemories }: { initialMemories: Memory[] 
     if (searchParams.get("addMemory") === "1") setIsOpen(true);
   }, [searchParams]);
 
-
-
   const handleModalOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open && searchParams.get("addMemory") === "1") {
       router.replace("/dashboard");
     }
   };
+
+  const years = useMemo(() => {
+    const list = [...new Set(initialMemories.map((m) => new Date(m.date).getFullYear().toString()))];
+    return list.sort((a, b) => Number(b) - Number(a));
+  }, [initialMemories]);
+
+  const filteredMemories = useMemo(() => {
+    return initialMemories
+      .filter((m) => (year === "all" ? true : new Date(m.date).getFullYear().toString() === year))
+      .sort((a, b) => +new Date(b.date) - +new Date(a.date));
+  }, [initialMemories, year]);
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,9 +69,26 @@ export function MemoryTimeline({ initialMemories }: { initialMemories: Memory[] 
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold">Shared memories</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">Shared memories</h1>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="year" className="text-xs text-muted-foreground">Year</Label>
+          <select
+            id="year"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            className="h-9 rounded-[12px] border border-border bg-card px-3 text-sm"
+          >
+            <option value="all">All</option>
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {initialMemories.map((memory) => (
+        {filteredMemories.map((memory) => (
           <MemoryCard key={memory.id} imageUrl={memory.imageUrl} caption={memory.caption} date={memory.date} />
         ))}
       </div>
