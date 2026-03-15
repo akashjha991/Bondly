@@ -3,27 +3,9 @@
 import { useTheme } from "next-themes";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Monitor, Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export function AppearanceSettings() {
     const { theme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    // Prevent hydration mismatch
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) {
-        return (
-            <Card className="border-slate-200 dark:border-slate-800 shadow-sm mt-8 bg-white dark:bg-slate-900">
-                <CardHeader>
-                    <CardTitle>Appearance</CardTitle>
-                    <CardDescription>Select your preferred theme.</CardDescription>
-                </CardHeader>
-            </Card>
-        );
-    }
 
     return (
         <Card className="border-slate-200 dark:border-slate-800 shadow-sm mt-8 bg-white dark:bg-slate-900">
@@ -39,7 +21,7 @@ export function AppearanceSettings() {
 
                 <div className="relative shrink-0">
                     <select
-                        value={theme}
+                        value={theme ?? "system"}
                         onChange={(e) => setTheme(e.target.value)}
                         className="w-full md:w-48 appearance-none bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-rose-500 transition-colors"
                     >

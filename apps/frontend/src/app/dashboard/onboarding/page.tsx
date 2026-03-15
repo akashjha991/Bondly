@@ -1,17 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getMyBondlyId } from "@/app/dashboard/actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Loader2, Copy, CheckCircle2 } from "lucide-react";
 
 export default function OnboardingPage() {
-    const { data: session } = useSession();
     const router = useRouter();
 
     const [inviteCode, setInviteCode] = useState("");
@@ -52,8 +50,9 @@ export default function OnboardingPage() {
             router.push("/dashboard");
             router.refresh();
 
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Failed to join relationship";
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -65,7 +64,7 @@ export default function OnboardingPage() {
                 <CardHeader className="text-center pb-8">
                     <CardTitle className="text-3xl font-bold">Find Your Person</CardTitle>
                     <CardDescription className="text-base mt-2">
-                        Bondly is built for two. Share your invite code or enter your partner's code to begin.
+                        Bondly is built for two. Share your invite code or enter your partner’s code to begin.
                     </CardDescription>
                 </CardHeader>
 
@@ -101,7 +100,7 @@ export default function OnboardingPage() {
                     <form onSubmit={handleJoin} className="space-y-4">
                         <div className="space-y-2">
                             <Input
-                                placeholder="Enter partner's 9-character code"
+                                placeholder="Enter partner’s 9-character code"
                                 value={inviteCode}
                                 onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                                 className="text-center font-mono text-lg uppercase h-14 rounded-xl border-slate-200 focus-visible:ring-rose-500"
